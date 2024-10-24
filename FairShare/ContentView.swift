@@ -1,6 +1,6 @@
 //
 //  ContentView.swift
-//  FairShare
+//  Fair Share
 //
 //  Created by Julian-Justin Djoum on 10/23/24.
 //
@@ -8,17 +8,75 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State private var billAmount = ""
+    @State private var tipPercentage = 15.0
+    @State private var numberOfPeople = 2
+    
+    func calculateTip(billAmount: Double, tipPercentage: Double, numberOfPeople: Int) -> (amountPerPerson: Double, grandTotal: Double, tipValue: Double) {
+        let peopleCount = Double(numberOfPeople)
+        let tipSelection = tipPercentage / 100
+        // Calculate tip value and grand total
+        let tipValue = billAmount * tipSelection
+        let grandTotal = billAmount + tipValue
+        // Calculate amount per person
+        let amountPerPerson = grandTotal / peopleCount
+        return (amountPerPerson, grandTotal, tipValue)
+    }
+    
+    var totalPerPerson: Double {
+        let result = calculateTip(billAmount: Double(billAmount) ?? 0, tipPercentage: tipPercentage, numberOfPeople: numberOfPeople)
+        return result.amountPerPerson
+    }
+    
+    var totalOrderAmount: Double {
+        let result = calculateTip(billAmount: Double(billAmount) ?? 0, tipPercentage: tipPercentage, numberOfPeople: numberOfPeople)
+        return result.grandTotal
+    }
+    
+    var totalTipAmount: Double {
+        let result = calculateTip(billAmount: Double(billAmount) ?? 0, tipPercentage: tipPercentage, numberOfPeople: numberOfPeople)
+        return result.tipValue
+    }
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        NavigationView {
+            Form {
+                Section(header: Text("Enter Bill Amount")) {
+                    TextField("Amount", text: $billAmount)
+                        .keyboardType(.decimalPad)
+                }
+                
+                Section(header: Text("Tip Percentage")) {
+                    Slider(value: $tipPercentage, in: 0...30, step: 1)
+                    Text("\(Int(tipPercentage))%")
+                }
+                
+                Section(header: Text("Number of People")) {
+                    Stepper(value: $numberOfPeople, in: 1...20) {
+                        Text("\(numberOfPeople) people")
+                    }
+                }
+                
+                Section(header: Text("Tip Amount")) {
+                    Text("$\(totalTipAmount, specifier: "%.2f")")
+                }
+                
+                Section(header: Text("Grand Total")) {
+                    Text("$\(totalOrderAmount, specifier: "%.2f")")
+                }
+                
+                Section(header: Text("Amount per Person")) {
+                    Text("$\(totalPerPerson, specifier: "%.2f")")
+                }
+            }
+            .navigationBarTitle("Fair Share")
         }
-        .padding()
     }
 }
 
-#Preview {
-    ContentView()
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        ContentView() // Replace 'ContentView' with your view's name
+    }
 }
+

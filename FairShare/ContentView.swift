@@ -62,7 +62,7 @@ struct ContentView: View {
                     Text("$\(totalTipAmount, specifier: "%.2f")")
                 }
                 
-                Section(header: Text("Grand Total")) {
+                Section(header: Text("Total Amount")) {
                     Text("$\(totalOrderAmount, specifier: "%.2f")")
                 }
                 
@@ -70,9 +70,11 @@ struct ContentView: View {
                     Text("$\(totalPerPerson, specifier: "%.2f")")
                 }
                 
-                Button(action: /*@START_MENU_TOKEN@*/{}/*@END_MENU_TOKEN@*/, label: {
+                Button(action: {
+                    billAmount = ""
+                }, label: {
                     Text("Reset")
-                })
+                }).disabled(billAmount.isEmpty)
                 Button(action: {
                     // Save results to local storage
                     userDefaults.set(totalTipAmount, forKey: "totalTipAmount")
@@ -86,10 +88,10 @@ struct ContentView: View {
                     print("perPerson: ", perPerson)
                 }, label: {
                     Text("Save")
-                })
-                Button(action: /*@START_MENU_TOKEN@*/{}/*@END_MENU_TOKEN@*/, label: {
+                }).disabled(billAmount.isEmpty)
+                Button(action: {}, label: {
                     Text("Share")
-                })
+                }).disabled(billAmount.isEmpty)
                 
             }
             .navigationBarTitle("Fair Share")

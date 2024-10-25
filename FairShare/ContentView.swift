@@ -11,6 +11,7 @@ struct ContentView: View {
     @State private var billAmount = ""
     @State private var tipPercentage = 15.0
     @State private var numberOfPeople = 2
+    let userDefaults = UserDefaults.standard
     
     func calculateTip(billAmount: Double, tipPercentage: Double, numberOfPeople: Int) -> (amountPerPerson: Double, grandTotal: Double, tipValue: Double) {
         let peopleCount = Double(numberOfPeople)
@@ -68,6 +69,28 @@ struct ContentView: View {
                 Section(header: Text("Amount per Person")) {
                     Text("$\(totalPerPerson, specifier: "%.2f")")
                 }
+                
+                Button(action: /*@START_MENU_TOKEN@*/{}/*@END_MENU_TOKEN@*/, label: {
+                    Text("Reset")
+                })
+                Button(action: {
+                    // Save results to local storage
+                    userDefaults.set(totalTipAmount, forKey: "totalTipAmount")
+                    userDefaults.set(totalOrderAmount, forKey: "totalOrderAmount")
+                    userDefaults.set(totalPerPerson, forKey: "totalPerPerson")
+                    let tip = userDefaults.double(forKey: "totalTipAmount")
+                    let orderAmount = userDefaults.double(forKey: "totalOrderAmount")
+                    let perPerson = userDefaults.double(forKey: "totalPerPerson")
+                    print("tipAmount: ", tip)
+                    print("orderAmount: ", orderAmount)
+                    print("perPerson: ", perPerson)
+                }, label: {
+                    Text("Save")
+                })
+                Button(action: /*@START_MENU_TOKEN@*/{}/*@END_MENU_TOKEN@*/, label: {
+                    Text("Share")
+                })
+                
             }
             .navigationBarTitle("Fair Share")
         }

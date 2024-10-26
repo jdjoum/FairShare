@@ -6,11 +6,26 @@
 //
 
 import SwiftUI
+import UIKit
+
+struct ActivityViewController: UIViewControllerRepresentable {
+    var activityItems: [Any]
+    var applicationActivities: [UIActivity]? = nil
+
+    func makeUIViewController(context: Context) -> UIActivityViewController {
+        return UIActivityViewController(activityItems: activityItems, applicationActivities: applicationActivities)
+    }
+
+    func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {
+        // No update needed
+    }
+}
 
 struct ContentView: View {
     @State private var billAmount = ""
     @State private var tipPercentage = 15.0
     @State private var numberOfPeople = 2
+    @State private var isShareSheetPresented = false
     let userDefaults = UserDefaults.standard
     
     func calculateTip(billAmount: Double, tipPercentage: Double, numberOfPeople: Int) -> (amountPerPerson: Double, grandTotal: Double, tipValue: Double) {
@@ -81,18 +96,30 @@ struct ContentView: View {
                     userDefaults.set(totalOrderAmount, forKey: "totalOrderAmount")
                     userDefaults.set(totalPerPerson, forKey: "totalPerPerson")
                     let tip = userDefaults.double(forKey: "totalTipAmount")
-                    let orderAmount = userDefaults.double(forKey: "totalOrderAmount")
+                    let totalAmount = userDefaults.double(forKey: "totalOrderAmount")
                     let perPerson = userDefaults.double(forKey: "totalPerPerson")
                     print("tipAmount: ", tip)
-                    print("orderAmount: ", orderAmount)
+                    print("totalAmount: ", totalAmount)
                     print("perPerson: ", perPerson)
                 }, label: {
                     Text("Save")
                 }).disabled(billAmount.isEmpty)
-                Button(action: {}, label: {
+                Button(action: {
+                    isShareSheetPresented = true
+                }, label: {
                     Text("Share")
                 }).disabled(billAmount.isEmpty)
-                
+                    .sheet(isPresented: $isShareSheetPresented, content: {
+                        let totalTipAmount: Double = totalTipAmount
+                        let totalOrderAmount: Double = totalOrderAmount
+                        let totalPerPerson: Double = totalPerPerson
+                        ActivityViewController(activityItems: [
+                            "Bill Amount: $" + billAmount + "/n",
+                            "Tip Amount: $\(totalTipAmount)/n",
+                            "Total Amount: $\(totalOrderAmount)/n",
+                            "Total Per Person: $\(totalPerPerson)/n"
+                        ])
+                    })
             }
             .navigationBarTitle("Fair Share")
         }
